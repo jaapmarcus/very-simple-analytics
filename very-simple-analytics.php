@@ -73,7 +73,14 @@ Class VerySimpleAnalytics {
 			'very-simple-analytics', // page
 			'very-simple-analytics' // section
 		);
-	
+		add_settings_field(
+			'code2', // id
+			'Analytics Code Embed', // title
+			array( $this, 'code2' ), // callback
+			'very-simple-analytics', // page
+			'very-simple-analytics' // section
+		);
+		
 	}
 	function settings_info(){
 		echo 'Please provide the Analytics ID';
@@ -82,22 +89,36 @@ Class VerySimpleAnalytics {
 	function code(){
 	
 		printf(
-			'<input class="regular-text" type="text" name="verysimpleanalytics" id="code" value="%s">',
-			isset( $this->options ) ? esc_attr( $this->options) : ''
+			'<input class="regular-text" type="text" name="verysimpleanalytics[code]" id="code" value="%s">',
+			isset( $this->options['code'] ) ? esc_attr( $this->options['code']) : ''
 		);
 	}
 	
+	function code2(){
+	
+		printf(
+			'<input class="regular-text" type="text" name="verysimpleanalytics[embed]" id="code2" value="%s">',
+			isset( $this->options['embed'] ) ? esc_attr( $this->options['embed']) : ''
+		);
+	}
+	
+		
 	
 	function sanitize($verysimpleanalytics){
-		if ( isset( $verysimpleanalytics ) ) {
-			return sanitize_text_field($verysimpleanalytics);
-		}
+		return $verysimpleanalytics;
 	}
 	
 	function loadJavascript(){
-		$tags = explode(',',$this -> options);
+	if(is_embed()){
+		$tags = explode(',',$this->options['embed']);	
+		
+	}else{
+		$tags = explode(',',$this->options['code']);
+	}
+
+
 ?>
-<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $this -> options; ?>"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $tags[0]; ?>"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -112,6 +133,7 @@ Class VerySimpleAnalytics {
 
 </script>
 <?php
+
 	}
 }
 
